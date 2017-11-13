@@ -1,47 +1,90 @@
 document.addEventListener('DOMContentLoaded', function () {
 
+
+
+    var alignments = {
+        ibrMal: L.tileLayer.wms('http://localhost:7000/geoserver/wms', {
+            layers: 'Marmaray:IBR-MAL_ALN',
+            format: 'image/png',
+            transparent: true,
+            maxZoom: 21
+        }),
+        kazYsk: L.tileLayer.wms('http://localhost:7000/geoserver/wms', {
+            layers: 'Marmaray:KAZ-YSK_ALN',
+            format: 'image/png',
+            transparent: true,
+            maxZoom: 20
+        }) 
+    }
     
-    /*var HOsLayer = L.geoJSON(HOs).bindPopup(function (layer) {
-        return layer.feature.properties.description;
-    }).bindTooltip(function (data) {
-        return data.feature.properties.DWGNAME;
-    });
+    var ho = L.tileLayer.wms('http://localhost:7000/geoserver/wms', {
+            layers: 'Marmaray:HO',
+            format: 'image/png',
+            transparent: true,
+            maxZoom: 20
+        });
+        
+    var chainageText = { 
+        ibrMal: L.tileLayer.wms('http://localhost:7000/geoserver/wms', {
+                    layers: 'Marmaray:IBR-MAL_ALN-ChainageText',
+                    format: 'image/png',
+                    transparent: true,
+                    maxZoom: 20
+                }),
+        kazYsk: L.tileLayer.wms('http://localhost:7000/geoserver/wms', {
+                    layers: 'Marmaray:KAZ-YSK_ALN-ChainageText',
+                    format: 'image/png',
+                    transparent: true,
+                    maxZoom: 20
+                })
+        }
+        
+    var draWalkwayCable = L.tileLayer.wms('http://localhost:7000/geoserver/wms', {
+            layers: 'Marmaray:IBR-MAL_DRA-WALKWAY-CABLE',
+            format: 'image/png',
+            transparent: true,
+            opacity: 0.7,
+            maxZoom: 20
+        });
+        
+    var ibrMalTerrain = L.tileLayer.wms('http://localhost:7000/geoserver/wms', {
+            layers: 'Marmaray:IBR-MAL_TERRAIN',
+            format: 'image/png',
+            transparent: true,
+            maxZoom: 20
+        });
+    var ibrMalRwText = L.tileLayer.wms('http://localhost:7000/geoserver/wms', {
+            layers: 'Marmaray:IBR-MAL_RW-Text',
+            format: 'image/png',
+            transparent: true,
+            maxZoom: 20
+        });
     
-    var turnoutsGeo = L.geoJSON(simpleTurnouts).bindPopup(function (layer) {
-        return layer.feature.properties.description;
-    }).bindTooltip(function (data) {
-        return data.feature.properties.Name;
-    });*/
-   /*  var wmsLayer = L.tileLayer.wms('http://localhost:7000/geoserver/wfs', {
-        layers: ['Marmaray:KAZ-YSK_ALN_Polyline',
-                 'Marmaray:KAZ-YSK_ALN-Chainage'],
-        format: 'image/png',
-        transparent: true,
-        attribution: "Weather data © 2012 IEM Nexrad"
-    }); */
+    var baseLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    	maxZoom: 20,
+    	attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    	opacity: 0.5
+    }); 
     
-    
-    var baseLayer = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-    });
-    
-    
+
 
     var map = L.map('map', {
-        center: [41, 29],
-        zoom: 15,
-        maxZoom: 20,
-        layers: [baseLayer]
+        center: [40.98, 28.95],
+        zoom: 12,
+        maxZoom: 21,
+        layers: [baseLayer , draWalkwayCable,ibrMalTerrain, ibrMalRwText, alignments.ibrMal, alignments.kazYsk, ho, chainageText.ibrMal, chainageText.kazYsk ]
     });
-
+    
 
     var i = 1;
     $('#cekbox').on('change', function () {
         if (i == 1) {
-            turnoutsGeo.remove();
+            map.removeLayer(ho);
+            map.removeLayer(ho);
             i = 0;
         } else {
-            turnoutsGeo.addTo(map);
+            map.addLayer(ho);
+            map.addLayer(ho);
             i = 1;
         }
     });
@@ -63,6 +106,23 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
     
+    
+    $('#getChainage').click(function () {
+        console.log('Chainage getted!')
+        $.ajax({
+          url: '/chainage',
+          data: {requestedChainage: $('#km').val()},
+          dataType: "json",
+          success: function (chainage) {
+              console.log(chainage);
+              map.setView({
+                  lon: chainage.location.coordinates[0],
+                  lat: chainage.location.coordinates[1]
+              },18);
+          }
+        });
+    });
+
     
 
 
