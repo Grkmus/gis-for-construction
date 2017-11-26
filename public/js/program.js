@@ -3,13 +3,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
     var alignments = {
-        ibrMal: L.tileLayer.wms('http://localhost:7000/geoserver/wms', {
+        ibrMal: L.tileLayer.wms('http://localhost:7000/geoserver/gwc/service/wms', {
             layers: 'Marmaray:IBR-MAL_ALN',
             format: 'image/png',
             transparent: true,
             maxZoom: 21
         }),
-        kazYsk: L.tileLayer.wms('http://localhost:7000/geoserver/wms', {
+        kazYsk: L.tileLayer.wms('http://localhost:7000/geoserver/gwc/service/wms', {
             layers: 'Marmaray:KAZ-YSK_ALN',
             format: 'image/png',
             transparent: true,
@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }) 
     }
     
-    var ho = L.tileLayer.wms('http://localhost:7000/geoserver/wms', {
+    var ho = L.tileLayer.wms('http://localhost:7000/geoserver/gwc/service/wms', {
             layers: 'Marmaray:HO',
             format: 'image/png',
             transparent: true,
@@ -25,13 +25,13 @@ document.addEventListener('DOMContentLoaded', function () {
         });
         
     var chainageText = { 
-        ibrMal: L.tileLayer.wms('http://localhost:7000/geoserver/wms', {
+        ibrMal: L.tileLayer.wms('http://localhost:7000/geoserver/gwc/service/wms', {
                     layers: 'Marmaray:IBR-MAL_ALN-ChainageText',
                     format: 'image/png',
                     transparent: true,
                     maxZoom: 20
                 }),
-        kazYsk: L.tileLayer.wms('http://localhost:7000/geoserver/wms', {
+        kazYsk: L.tileLayer.wms('http://localhost:7000/geoserver/gwc/service/wms', {
                     layers: 'Marmaray:KAZ-YSK_ALN-ChainageText',
                     format: 'image/png',
                     transparent: true,
@@ -39,26 +39,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 })
         }
         
-    var draWalkwayCable = L.tileLayer.wms('http://localhost:7000/geoserver/wms', {
-            layers: 'Marmaray:IBR-MAL_DRA-WALKWAY-CABLE',
-            format: 'image/png',
-            transparent: true,
-            opacity: 0.7,
-            maxZoom: 20
-        });
-        
-    var ibrMalTerrain = L.tileLayer.wms('http://localhost:7000/geoserver/wms', {
-            layers: 'Marmaray:IBR-MAL_TERRAIN',
-            format: 'image/png',
-            transparent: true,
-            maxZoom: 20
-        });
-    var ibrMalRwText = L.tileLayer.wms('http://localhost:7000/geoserver/wms', {
-            layers: 'Marmaray:IBR-MAL_RW-Text',
-            format: 'image/png',
-            transparent: true,
-            maxZoom: 20
-        });
     
     var baseLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     	maxZoom: 20,
@@ -72,7 +52,7 @@ document.addEventListener('DOMContentLoaded', function () {
         center: [40.98, 28.95],
         zoom: 12,
         maxZoom: 21,
-        layers: [baseLayer , draWalkwayCable,ibrMalTerrain, ibrMalRwText, alignments.ibrMal, alignments.kazYsk, ho, chainageText.ibrMal, chainageText.kazYsk ]
+        layers: [baseLayer, alignments.ibrMal, alignments.kazYsk, ho, chainageText.ibrMal, chainageText.kazYsk ]
     });
     
 
@@ -106,8 +86,8 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
     
-    
-    $('#getChainage').click(function () {
+    $('#getChainage').submit(function (e) {
+        e.preventDefault();
         console.log('Chainage getted!')
         $.ajax({
           url: '/chainage',
@@ -121,6 +101,11 @@ document.addEventListener('DOMContentLoaded', function () {
               },18);
           }
         });
+    });
+    $.getJSON("test.geojson",function(data){
+        
+        // add GeoJSON layer to the map once the file is loaded
+        L.geoJson(data).addTo(map);
     });
 
     
