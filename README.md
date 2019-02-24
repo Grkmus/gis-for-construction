@@ -3,5 +3,5 @@
 basic planning and follow up tool for transportation projects on GIS environment. 
 
 -Add all your project essentials on the map and take note about them. 
--Syncrohinize Work Breakdown structure and make activity queries on project parts.
--Monitor whole project in one system
+-Synchronize your Work Breakdown Structure and make activity queries on the project parts.
+-Monitor the project progress in one system
